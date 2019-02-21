@@ -3,19 +3,13 @@ import csv
 import random
 import matplotlib.pyplot as plt 
 
-
-CONSTANT_BID_PRICE = 0
 BUDGET = 6250000
-
-
 
 def RTB_simulation(price):
 	click_through_rate = 0
 	total_impression = 0
 	total_click = 0
 	total_cost = 0
-	average_cpm = 0
-	average_cpc = 0
 
 	with open('we_data/validation.csv', 'rb') as csvfile:
 		spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
@@ -34,49 +28,24 @@ def RTB_simulation(price):
 					total_impression += 1
 				else:
 					break
-
-		# print "total click", total_click, "total impression", total_impression
 		
 		if total_impression == 0:
 			click_through_rate = 0
 			average_cpm = 0
 		else:
 			click_through_rate = float(total_click/total_impression)
-		# 	average_cpm = (total_cost/total_impression)*1000
-
-		# if total_click == 0:
-		# 	average_cpc = ""
-		# else:
-		# 	average_cpc =  total_cost/total_click
-
-		# global Highest_Click, Highest_CTR
-		# if total_click > Highest_Click:
-		# 	Highest_Click = total_click
-		# if click_through_rate > Highest_CTR:
-		# 	Highest_CTR = click_through_rate
-
-		# print "total clicks", total_click
 
 		return total_click, click_through_rate
 
-highest_upper_bound = 0
-highest_lower_bound = 0
-Highest_CTR = 0
-Highest_Click = 0
 
-def main():
-	AVERAGE_CTR = []
-	bid_price =[]
-
-	# clicks = 0
-	# ctrs = 0
+def random_bidding_strategy():
+	highest_upper_bound = 0
+	highest_lower_bound = 0
 	lower_bound = 0
+	highest_CTR = 0
+	highest_Click = 0
 
 	for i in xrange(100):
-		# global CONSTANT_BID_PRICE
-		# CONSTANT_BID_PRICE += 1
-
-		# random
 		lower_bound += 1
 		upper_bound = lower_bound
 		while upper_bound < 300:
@@ -89,35 +58,59 @@ def main():
 
 			click, ctr = RTB_simulation(average_bid)
 			global Highest_Click
-			if click > Highest_Click:
-				Highest_Click = click
-				Highest_CTR = ctr
+			if click > highest_Click:
+				highest_Click = click
+				highest_CTR = ctr
 				highest_upper_bound = upper_bound
 				highest_lower_bound = lower_bound
 
 		print "Progress:", i
 
 	print "Best upper bound: ", highest_upper_bound, "Best lower bound: ", highest_lower_bound
-	print "Highest click: ", Highest_Click, "Highest_CTR: ", Highest_CTR
+	print "Highest click: ", highest_Click, "Highest_CTR: ", highest_CTR
 
 
-		# print "total clicks:", clicks/10,"CTR", ctrs/10
-		# print "CTR:", ctr, "bid price:", random_bid
+def constant_bidding_strategy():
 
+	clicks = []
+	ctrs = []
+	constant_bid_price = 0
+	highest_CTR = 0
+	highest_Click = 0
+
+	for i in xrange(1,302):
+		constant_bid_price += 1
+		click, ctr = RTB_simulation(constant_bid_price)
+		clicks.append(click)
+		ctrs.append(ctr)
+		bid_price.append(constant_bid_price)
+
+		if click > highest_Click:
+			highest_Click = click
+			highest_CTR = ctr
+
+		print "Progress:", i
+
+	print "Highest click: ", highest_Click, "Highest_CTR: ", highest_CTR
 	
-	# AVERAGE_CTR.append(avg_ctr) 
-	# bid_price.append(CONSTANT_BID_PRICE)
-	# plt.plot(bid_price, AVERAGE_CTR, linewidth=3)
-
-	# print "Highest CTR:", Highest_CTR, "Highest clicks:", Highest_Click
-
-	# plt.xlabel('bid price') 
-	# plt.ylabel('click_through_rate') 
-	# plt.title('constant bidding') 
-	# plt.legend()
-	# plt.show() 
+	AVERAGE_CTR.append(avg_ctr) 
+	plt.plot(bid_price, ctrs, linewidth=3)
+	# plt.plot(bid_price, clicks, linewidth=3)
+	plt.xlabel('bid price') 
+	plt.ylabel('click_through_rate') 
+	# plt.ylabel('total clicks') 
+	plt.title('constant bidding') 
+	plt.legend()
+	plt.show() 
 
 
+def multi_agent_rand_bidding():
+	
+
+def main():
+	# constant_bidding_strategy()
+	# random_bidding_strategy()
+	multi_agent_rand_bidding()
 
 if __name__ == '__main__':
 	main()
