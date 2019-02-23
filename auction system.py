@@ -50,13 +50,9 @@ def random_bidding_strategy():
 		upper_bound = lower_bound
 		while upper_bound < 300:
 			upper_bound += 10
+			bid = random.randint(lower_bound,upper_bound)
 
-			average_bid = 0
-			for j in range(5):
-				average_bid += random.randint(lower_bound,upper_bound)
-			average_bid = average_bid/5
-
-			click, ctr = RTB_simulation(average_bid)
+			click, ctr = multi_agent_RTB_simulation(bid)
 			global Highest_Click
 			if click > highest_Click:
 				highest_Click = click
@@ -103,14 +99,55 @@ def constant_bidding_strategy():
 	plt.legend()
 	plt.show() 
 
+def multi_agent_RTB_simulation(price):
+	click_through_rate = 0
+	total_impression = 0
+	total_click = 0
+	total_cost = 0
 
-def multi_agent_rand_bidding():
-	
+	with open('we_data/validation.csv', 'rb') as csvfile:
+		spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+		for row in spamreader:
+			temp = row[0].split(',')
+			if(temp[0] == 'click'):
+				continue
+
+			click = int(temp[0])
+			payprice =int(temp[21])
+
+			# agents number 
+			agents_number = 50
+			# Bidding status
+			highest_price = payprice
+			second_price = payprice
+
+			# multi agents
+			for i in range(agents_number):
+				temp_price = random.randint(7, 127)
+				if temp_price > highest_price and temp_price > payprice:
+					second_price = highest_price
+					highest_price = temp_price
+
+			if price > highest_price:
+				if total_cost + second_price <= BUDGET:
+					total_cost += second_price
+					total_click += click
+					total_impression += 1
+				else:
+					break
+		
+		if total_impression == 0:
+			click_through_rate = 0
+			average_cpm = 0
+		else:
+			click_through_rate = float(total_click/total_impression)
+
+		return total_click, click_through_rate
+
 
 def main():
 	# constant_bidding_strategy()
-	# random_bidding_strategy()
-	multi_agent_rand_bidding()
+	random_bidding_strategy()
 
 if __name__ == '__main__':
 	main()
