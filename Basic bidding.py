@@ -6,13 +6,13 @@ import numpy as np
 
 BUDGET = 6250000
 
-def RTB_simulation(lower_bound, upper_bound):
+def RTB_simulation(price):
 	click_through_rate = 0
 	total_impression = 0
 	total_click = 0
 	total_cost = 0
 
-	with open('we_data/validation.csv', 'rb') as csvfile:
+	with open('we_data/train.csv', 'rb') as csvfile:
 		spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
 		for row in spamreader:
 			temp = row[0].split(',')
@@ -21,7 +21,7 @@ def RTB_simulation(lower_bound, upper_bound):
 
 			click = int(temp[0])
 			payprice =int(temp[21])
-			price = np.random.randint(lower_bound, upper_bound)
+			# price = np.random.randint(lower_bound, upper_bound)
 			if price > payprice:
 				if total_cost+ payprice <= BUDGET:
 					total_cost += payprice
@@ -92,6 +92,9 @@ def constant_bidding_strategy():
 	highest_CTR = 0
 	highest_Click = 0
 
+	bid_price = []
+
+
 	for i in xrange(1,302):
 		constant_bid_price += 1
 		click, ctr = RTB_simulation(constant_bid_price)
@@ -107,8 +110,7 @@ def constant_bidding_strategy():
 
 	print "Highest click: ", highest_Click, "Highest_CTR: ", highest_CTR
 	
-	AVERAGE_CTR.append(avg_ctr) 
-	plt.plot(bid_price, ctrs, linewidth=3)
+	plt.plot(bid_price, clicks, linewidth=3)
 	# plt.plot(bid_price, clicks, linewidth=3)
 	plt.xlabel('bid price') 
 	plt.ylabel('click_through_rate') 
@@ -166,8 +168,8 @@ def multi_agent_RTB_simulation(lower_bound, upper_bound, agents_number):
 
 
 def main():
-	# constant_bidding_strategy()
-	random_bidding_strategy()
+	constant_bidding_strategy()
+	# random_bidding_strategy()
 
 if __name__ == '__main__':
 	main()
