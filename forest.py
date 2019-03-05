@@ -9,8 +9,13 @@ import os
 import matplotlib as mpl
 mpl.use('TkAgg')
 import matplotlib.pyplot as plt
+import random
+import numpy as np
 
 BUDGET = 6250000
+rand_seed = 123
+random.seed(rand_seed)
+np.random.seed(rand_seed)
 USELESS_FEATURE = ['adexchange','click', 'bidprice', 'payprice', 'bidid', 'IP', 'userid', 'creative', 'domain', 'url', 'urlid', 'slotid', 'keypage']
 
 # Gradient boosting decision trees GBDT
@@ -96,24 +101,26 @@ y_valid = df_valid['click']
 
 print "Training data"
 
-clf = LogisticRegression(penalty='l2',verbose=True,max_iter=200)
-clf.fit(x_train, y_train)
+# clf = LogisticRegression(penalty='l2',verbose=True)
+# clf.fit(x_train, y_train)
 
 # nn = MLPClassifier(hidden_layer_sizes=(140,70),
 #                   activation = 'logistic',
 #                   verbose=True,
 #                   solver = 'lbfgs',
-#                   max_iter = 5,
+#                   max_iter = 50,
 #                   learning_rate_init = 0.0005,
 #                   alpha = 0.0001,
 #                   random_state=2017)
+nn = RandomForestClassifier(n_estimators = 500, max_depth = 30, random_state = rand_seed,verbose=True)
 
 # nn.fit(x_train, y_train)
 
 # clf = XGBClassifier(max_depth=5, silent=False, gamma=0, min_child_weight =7, colsample_bytree=0.6,
 #                     subsample=0.95, reg_alpha = 0.05, learning_rate = 0.1, n_estimators=100)
 
-clf_pCTR = clf.fit(x_train, y_train)
+# clf_pCTR = clf.fit(x_train, y_train)
+clf_pCTR = nn.fit(x_train, y_train)
 
 print "Predicting data"
 pctr = clf_pCTR.predict_proba(x_valid)[:, 1]
@@ -164,7 +171,7 @@ plt.plot(base_prices, clicks, linewidth=3)
 plt.xlabel('base price')
 plt.ylabel('total clicks')
 # plt.ylabel('total clicks')
-plt.title('logistic Regression bidding')
+plt.title(' RandomForestRegressor')
 plt.legend()
 plt.show()
 
