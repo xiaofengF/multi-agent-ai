@@ -93,6 +93,7 @@ y_valid = df_valid['click']
 
 print "Training data"
 
+# ######################################## Neural network ####################################
 # Neural network
 # model = MLPClassifier(verbose=True, hidden_layer_sizes=(300,150,50),solver='adam', alpha=0.0001)
 
@@ -104,7 +105,7 @@ print "Training data"
 
 
 
-# Gradient boosting
+# ######################################## Gradient boosting ####################################
 
 clf = XGBClassifier(max_depth=5, silent=False, gamma=0, min_child_weight =7, colsample_bytree=0.6,
                     subsample=0.95, reg_alpha = 0.03, learning_rate = 0.1, n_estimators=100)
